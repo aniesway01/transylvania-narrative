@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>特蘭西瓦尼亞 — 故事導覽</title>
+<title>特蘭西瓦尼亞 — 互動敘事地圖</title>
 <style>
 :root {
   --bg: #0f0f1a;
@@ -21,10 +21,7 @@
   --tag-bg: rgba(74,153,153,0.15);
   --tag-text: #5db8b8;
   --success: #4ade80;
-  --warning: #fbbf24;
-  --danger: #ef4444;
   --radius: 10px;
-  --gold: #f59e0b;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -37,14 +34,13 @@ body {
 }
 .app { display: flex; height: 100vh; flex-direction: column; }
 
-/* === Banner === */
+/* === Game Header Banner === */
 .game-banner {
-  background: linear-gradient(135deg, #1a0a0a 0%, var(--bg3) 50%, var(--bg2) 100%);
-  padding: 16px 24px 12px;
+  background: linear-gradient(135deg, var(--accent2) 0%, var(--bg3) 50%, var(--bg2) 100%);
+  padding: 20px 24px 16px;
   border-bottom: 1px solid var(--border);
   position: relative;
   overflow: hidden;
-  flex-shrink: 0;
 }
 .game-banner::before {
   content: '';
@@ -54,401 +50,279 @@ body {
   background: radial-gradient(ellipse at 80% 50%, var(--accent-glow), transparent 70%);
   pointer-events: none;
 }
-.banner-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
 .game-banner h1 {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
   color: #fff;
   letter-spacing: 1px;
+  margin-bottom: 2px;
 }
 .game-banner .subtitle {
-  font-size: 12px;
-  color: rgba(255,255,255,0.4);
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
   font-style: italic;
+  margin-bottom: 8px;
 }
-.banner-stats {
+.game-banner .banner-stats {
   display: flex;
-  gap: 12px;
-  font-size: 11px;
-  color: rgba(255,255,255,0.5);
-  margin-top: 4px;
+  gap: 16px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
 }
-.banner-stats b { color: var(--accent); }
-.lang-toggle {
+.game-banner .banner-stats .stat-item {
   display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.game-banner .banner-stats b { color: var(--accent); }
+.translation-badge {
+  display: inline-flex;
+  align-items: center;
   gap: 4px;
-  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
 }
-.lang-btn {
-  padding: 4px 12px;
-  border-radius: 14px;
+.translation-badge.full {
+  background: rgba(74,222,128,0.15);
+  color: var(--success);
+}
+.translation-badge.partial {
+  background: rgba(251,191,36,0.15);
+  color: #fbbf24;
+}
+
+/* === Toolbar === */
+.toolbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.search-box {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  width: 220px;
+  flex-shrink: 1;
+  min-width: 140px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-box:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.search-box::placeholder { color: var(--text3); }
+.toolbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+.toggle-row input { accent-color: var(--accent); cursor: pointer; }
+.toggle-row:hover { color: var(--text); }
+.view-toggle { display: flex; gap: 4px; }
+.view-btn {
+  padding: 5px 14px;
+  border-radius: 6px;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text2);
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
-.lang-btn.active {
-  background: var(--accent);
+.view-btn:hover { background: var(--bg3); color: var(--text); }
+.view-btn.active {
+  background: var(--accent2);
   color: #fff;
-  border-color: var(--accent);
-}
-
-/* === Nav Tabs === */
-.nav-tabs {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  padding: 0 16px;
-  gap: 2px;
-  overflow-x: auto;
-  flex-shrink: 0;
-}
-.nav-tab {
-  padding: 10px 18px;
-  border: none;
-  background: transparent;
-  color: var(--text2);
-  font-size: 13px;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-.nav-tab:hover { color: var(--text); background: var(--bg3); }
-.nav-tab.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  font-weight: 600;
+  border-color: var(--accent2);
+  box-shadow: 0 2px 8px rgba(83,52,131,0.3);
 }
 
 /* === Content Area === */
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 24px 40px;
+  padding: 16px 20px 40px;
   scroll-behavior: smooth;
 }
-.content::-webkit-scrollbar { width: 6px; }
-.content::-webkit-scrollbar-track { background: transparent; }
-.content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-.content::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
 
-/* === Cards === */
-.card {
-  background: var(--card);
+/* === Group Headers === */
+.group-header {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent2), var(--bg3));
+  padding: 14px 20px;
+  margin: 20px 0 6px 0;
   border-radius: var(--radius);
-  padding: 18px 22px;
-  margin-bottom: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.1s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.group-header:first-child { margin-top: 0; }
+.group-header:active { transform: scale(0.995); }
+.group-arrow {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.group-arrow.open { transform: rotate(90deg); }
+.group-info { flex: 1; min-width: 0; }
+.group-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  border: none;
+  padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.group-header .group-name-en {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  font-style: italic;
+  margin-top: 1px;
+}
+.group-header .group-stats {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  flex-shrink: 0;
+}
+.group-header .group-stats b { color: var(--accent); }
+
+/* === Group Body === */
+.group-body {
+  display: none;
+  padding: 2px 0;
+}
+.group-body.open { display: block; }
+
+/* === Passage Cards === */
+.passage {
+  background: var(--card);
+  padding: 14px 18px;
+  margin: 5px 0;
+  border-radius: 8px;
   border-left: 3px solid transparent;
   transition: border-color 0.2s, background 0.15s;
+  position: relative;
 }
-.card:hover {
+.passage:hover {
   border-left-color: var(--accent);
   background: var(--card-hover);
 }
-.card h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #fff;
+.passage-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
   margin-bottom: 6px;
 }
-.card .sub {
-  font-size: 12px;
-  color: var(--text2);
-  margin-bottom: 8px;
-}
-.card p {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text);
-}
-.card-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-/* === Tags & Badges === */
-.tag {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 500;
-}
-.tag-accent { background: rgba(220,38,38,0.15); color: var(--accent); }
-.tag-purple { background: rgba(83,52,131,0.25); color: #a78bfa; }
-.tag-teal { background: var(--tag-bg); color: var(--tag-text); }
-.tag-gold { background: rgba(245,158,11,0.15); color: var(--gold); }
-.tag-green { background: rgba(74,222,128,0.15); color: var(--success); }
-.tag-red { background: rgba(239,68,68,0.15); color: var(--danger); }
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-}
-.badge-red { background: rgba(220,38,38,0.15); color: var(--accent); }
-.badge-green { background: rgba(74,222,128,0.15); color: var(--success); }
-.badge-gold { background: rgba(245,158,11,0.15); color: var(--gold); }
-
-/* === Section Headers === */
-.section-header {
-  background: linear-gradient(135deg, var(--accent2), var(--bg3));
-  padding: 14px 20px;
-  margin: 20px 0 10px 0;
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  user-select: none;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-}
-.section-header:first-child { margin-top: 0; }
-.section-header h2 {
-  font-size: 17px;
-  font-weight: 600;
-  color: #fff;
-  flex: 1;
-}
-.section-header .count {
-  font-size: 12px;
-  color: rgba(255,255,255,0.5);
-}
-.section-arrow {
-  font-size: 11px;
-  color: rgba(255,255,255,0.4);
-  transition: transform 0.2s;
-}
-.section-arrow.open { transform: rotate(90deg); }
-.section-body { display: none; padding: 4px 0; }
-.section-body.open { display: block; }
-
-/* === Character Cards === */
-.char-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 12px;
-  border-left: 3px solid var(--accent);
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 16px;
-}
-.char-card h3 { font-size: 18px; color: #fff; margin-bottom: 2px; }
-.char-card .role { font-size: 13px; color: var(--accent); margin-bottom: 8px; }
-.char-card .desc { font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 10px; }
-.char-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: flex-end;
-  justify-content: flex-start;
-}
-.stat-box {
-  text-align: center;
-  padding: 6px 14px;
-  border-radius: 8px;
-  background: var(--bg3);
-  min-width: 80px;
-}
-.stat-box .num { font-size: 22px; font-weight: 700; color: var(--accent); }
-.stat-box .label { font-size: 10px; color: var(--text2); }
-
-/* === Location Grid === */
-.loc-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 12px;
-}
-.loc-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 18px;
-  border-left: 3px solid var(--accent2);
-  transition: all 0.2s;
-}
-.loc-card:hover { border-left-color: var(--accent); background: var(--card-hover); }
-.loc-card h4 { font-size: 14px; color: #fff; margin-bottom: 2px; }
-.loc-card .loc-en { font-size: 11px; color: var(--text3); margin-bottom: 6px; }
-.loc-card .loc-count { font-size: 12px; color: var(--text2); }
-
-/* === Ending Cards === */
-.ending-card {
-  background: var(--card);
-  border-radius: 8px;
-  padding: 14px 18px;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-.ending-icon {
-  font-size: 20px;
-  flex-shrink: 0;
-  width: 32px;
-  text-align: center;
-}
-.ending-info { flex: 1; min-width: 0; }
-.ending-info h4 {
+.passage-title {
   font-size: 13px;
   font-weight: 600;
-  color: #fff;
-  margin-bottom: 3px;
-}
-.ending-info .excerpt {
-  font-size: 12px;
-  color: var(--text2);
-  line-height: 1.5;
-}
-
-/* === Reader === */
-.reader-passage {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 24px 28px;
-  margin-bottom: 16px;
-  max-width: 780px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.reader-passage h3 {
-  font-size: 13px;
   color: var(--accent);
-  margin-bottom: 12px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.passage .pid {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'Consolas', monospace;
+  flex-shrink: 0;
+}
+.passage .pname {
+  font-size: 11px;
+  color: var(--tag-text);
+  margin-bottom: 4px;
   font-family: monospace;
 }
-.reader-text {
-  font-size: 15px;
-  line-height: 1.9;
+.passage .text {
+  font-size: 14.5px;
+  line-height: 1.85;
   color: var(--text);
   white-space: pre-wrap;
   word-break: break-word;
 }
-.reader-text-en {
+.passage-img {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
+  margin: 8px 0;
+  display: block;
+}
+.passage .text-en {
   font-size: 12px;
   color: var(--text2);
-  margin-top: 12px;
-  padding-top: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px dashed var(--border);
   font-style: italic;
   line-height: 1.6;
   white-space: pre-wrap;
+  max-height: 150px;
+  overflow: hidden;
+  position: relative;
 }
-.reader-choices {
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.passage .text-en.collapsed::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40px;
+  background: linear-gradient(transparent, var(--card));
+  pointer-events: none;
 }
-.reader-choice {
-  padding: 10px 18px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg3);
-  color: var(--text);
-  font-size: 14px;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.passage .tag-row { margin-bottom: 6px; }
+.passage .tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  font-size: 11px;
+  margin-right: 4px;
+  margin-bottom: 2px;
 }
-.reader-choice:hover {
-  border-color: var(--accent);
-  background: rgba(220,38,38,0.1);
-  color: #fff;
-}
-.reader-choice .arrow { color: var(--accent); font-size: 12px; }
-.reader-embeds {
-  margin-top: 12px;
-  padding: 16px 20px;
-  background: var(--bg2);
-  border-radius: 8px;
-  border-left: 2px solid var(--accent2);
-}
-.reader-embeds .embed-label {
+.passage-num {
   font-size: 10px;
   color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-.reader-nav {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-  max-width: 780px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.reader-nav-btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg2);
-  color: var(--text2);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.reader-nav-btn:hover { color: var(--text); border-color: var(--accent); }
-.reader-nav-btn:disabled { opacity: 0.3; cursor: default; }
-.reader-breadcrumb {
-  flex: 1;
-  font-size: 11px;
-  color: var(--text3);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow: hidden;
-  white-space: nowrap;
+  font-family: monospace;
+  position: absolute;
+  top: 14px;
+  right: 16px;
 }
 
-/* === Timeline === */
-.timeline { position: relative; padding-left: 28px; }
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 8px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--border);
-}
-.timeline-item {
-  position: relative;
-  margin-bottom: 20px;
-}
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -24px;
-  top: 8px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: 2px solid var(--bg);
-}
-.timeline-item.active::before {
-  box-shadow: 0 0 0 4px var(--accent-glow);
-}
-
-/* === Empty & Loading === */
+/* === Empty / Loading States === */
 .loading {
   text-align: center;
   padding: 80px 20px;
@@ -464,624 +338,405 @@ body {
   margin-bottom: 16px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* === Collapsible Passage Preview === */
-.passage-preview {
-  font-size: 13px;
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
   color: var(--text2);
-  line-height: 1.6;
-  max-height: 80px;
-  overflow: hidden;
-  position: relative;
-  cursor: pointer;
+  font-size: 14px;
 }
-.passage-preview.expanded { max-height: none; }
-.passage-preview:not(.expanded)::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 30px;
-  background: linear-gradient(transparent, var(--card));
-}
+
+/* === Scrollbar === */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
 
 /* === Mobile === */
 @media (max-width: 768px) {
-  .game-banner { padding: 12px 16px; }
-  .game-banner h1 { font-size: 18px; }
-  .content { padding: 12px 14px 40px; }
-  .nav-tab { padding: 8px 12px; font-size: 12px; }
-  .char-card { grid-template-columns: 1fr; }
-  .char-stats { flex-direction: row; align-items: center; }
-  .loc-grid { grid-template-columns: 1fr; }
-  .reader-passage { padding: 18px; }
-  .banner-row { flex-wrap: wrap; }
-  .banner-stats { flex-wrap: wrap; }
+  .game-banner { padding: 16px; }
+  .game-banner h1 { font-size: 22px; }
+  .content { padding: 12px; }
+  .passage .text { font-size: 15px; line-height: 1.9; }
+  .toolbar { padding: 6px 10px; gap: 6px; }
+  .search-box { width: 100%; }
+  .toolbar-right { margin-left: 0; width: 100%; flex-wrap: wrap; justify-content: center; }
+  .view-toggle { width: 100%; justify-content: center; }
+  .group-header { padding: 12px 14px; }
+  .group-header h2 { font-size: 16px; }
 }
 </style>
 </head>
 <body>
 <div class="app">
+  <!-- Game Banner -->
   <div class="game-banner">
-    <div class="banner-row">
-      <div>
-        <h1>特蘭西瓦尼亞 — 故事導覽</h1>
-        <div class="subtitle">Transylvania — Interactive Story Guide</div>
-        <div class="banner-stats" id="bannerStats"></div>
-      </div>
-      <div class="lang-toggle">
-        <button class="lang-btn active" data-lang="zh" onclick="setLang('zh')">中文</button>
-        <button class="lang-btn" data-lang="en" onclick="setLang('en')">English</button>
-        <button class="lang-btn" data-lang="both" onclick="setLang('both')">雙語</button>
+    <h1 id="gameTitle">載入中...</h1>
+    <div class="subtitle" id="gameSubtitle"></div>
+    <div class="banner-stats" id="bannerStats"></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <input type="text" class="search-box" id="searchBox" placeholder="搜尋段落內容...">
+    <div class="toolbar-right">
+      <label class="toggle-row">
+        <input type="checkbox" id="showZh" checked>
+        <span>中文</span>
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" id="showEn">
+        <span>英文原文</span>
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" id="showName">
+        <span>段落 ID</span>
+      </label>
+      <div class="view-toggle">
+        <button class="view-btn active" data-view="group" id="viewGroup">按分類</button>
+        <button class="view-btn" data-view="all" id="viewAll">全部段落</button>
       </div>
     </div>
   </div>
 
-  <div class="nav-tabs">
-    <button class="nav-tab active" data-view="chapters" onclick="switchView('chapters')">章節概覽</button>
-    <button class="nav-tab" data-view="characters" onclick="switchView('characters')">角色檔案</button>
-    <button class="nav-tab" data-view="locations" onclick="switchView('locations')">位置地圖</button>
-    <button class="nav-tab" data-view="endings" onclick="switchView('endings')">結局指南</button>
-    <button class="nav-tab" data-view="reader" onclick="switchView('reader')">互動閱讀器</button>
-  </div>
-
+  <!-- Content -->
   <div class="content" id="content">
     <div class="loading">
       <div class="spinner"></div>
-      <div>載入故事數據中...</div>
+      <div>載入敘事數據中...</div>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-// State
-// ═══════════════════════════════════════════════════════════════
-let STRUCT = null;   // _story_structure.json
-let PASSAGES = null; // passages.json
-let byName = {};     // name -> passage
-let currentView = 'chapters';
-let lang = 'zh';     // zh | en | both
-let readerHistory = [];
-let readerCurrent = null;
+// === Config (injected by build script) ===
+const GAME_CONFIG = {"title": "Transylvania", "title_zh": "特蘭西瓦尼亞", "color_accent": "#dc2626", "engine": ""};
 
-// ═══════════════════════════════════════════════════════════════
-// Data Loading
-// ═══════════════════════════════════════════════════════════════
+// === State ===
+let DATA = null;
+let searchQuery = '';
+let showZh = true;
+let showEn = false;
+let showName = false;
+let currentView = 'group';
+let openGroups = new Set();
+
+// === Data Loading ===
 async function loadData() {
-  try {
-    const [structResp, passResp] = await Promise.all([
-      fetch('data/_story_structure.json?v=1'),
-      fetch('data/passages.json?v=2'),
-    ]);
-    STRUCT = await structResp.json();
-    const passData = await passResp.json();
-    PASSAGES = passData.passages || passData;
-    // Build lookup
-    if (Array.isArray(PASSAGES)) {
-      PASSAGES.forEach(p => { byName[p.name] = p; });
-    }
-    init();
-  } catch (e) {
-    document.getElementById('content').innerHTML =
-      `<div class="loading" style="color:var(--danger)">載入失敗: ${e.message}</div>`;
+  const resp = await fetch('data/passages.json?v=' + Date.now());
+  DATA = await resp.json();
+  if (!DATA.meta.has_zh) {
+    document.getElementById('showZh').parentElement.style.display = 'none';
+    showZh = false;
+    showEn = true;
+    document.getElementById('showEn').checked = true;
   }
+  init();
 }
 
-function init() {
-  renderBanner();
-  handleHash();
-  window.addEventListener('hashchange', handleHash);
-}
-
-function handleHash() {
-  const hash = location.hash.slice(1);
-  if (hash.startsWith('reader/')) {
-    const pname = decodeURIComponent(hash.slice(7));
-    switchView('reader');
-    navigateReader(pname);
-  } else if (hash) {
-    switchView(hash);
-  } else {
-    renderView();
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// Banner
-// ═══════════════════════════════════════════════════════════════
+// === Banner ===
 function renderBanner() {
-  const m = STRUCT.meta;
-  const e = STRUCT.endings;
+  const m = DATA.meta;
+  const titleZh = m.title_zh || m.title || '';
+  const titleEn = m.title || '';
+  document.getElementById('gameTitle').textContent = titleZh;
+  document.getElementById('gameSubtitle').textContent = titleZh !== titleEn ? titleEn : '';
+  document.title = titleZh + ' — 互動敘事地圖';
+
+  const total = m.total || DATA.passages.length;
+  const zhCount = m.translated_count || DATA.passages.filter(p => p.content_zh).length;
+  const groupCount = (DATA.groups || []).length;
+  const pct = total > 0 ? Math.round(zhCount / total * 100) : 0;
+
+  let badgeClass = pct >= 95 ? 'full' : 'partial';
+  let badgeText = pct >= 95 ? '✓ 翻譯完成' : `${pct}% 已翻譯`;
+
   document.getElementById('bannerStats').innerHTML = `
-    <span><b>${m.total_passages}</b> 段落</span>
-    <span><b>${m.content_passages}</b> 故事內容</span>
-    <span><b>${Object.keys(STRUCT.characters).length}</b> 角色</span>
-    <span><b>${e.total}</b> 結局</span>
-    <span><b>${Object.keys(STRUCT.locations).length}</b> 地點</span>
+    <span class="stat-item"><b>${groupCount}</b> 分類</span>
+    <span class="stat-item"><b>${total}</b> 段落</span>
+    <span class="translation-badge ${badgeClass}">${badgeText}</span>
   `;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Lang & View Switching
-// ═══════════════════════════════════════════════════════════════
-function setLang(l) {
-  lang = l;
-  document.querySelectorAll('.lang-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.lang === l);
-  });
-  renderView();
-}
-
-function switchView(view) {
-  currentView = view;
-  document.querySelectorAll('.nav-tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.view === view);
-  });
-  if (view !== 'reader') {
-    location.hash = view;
+// === Filtering ===
+function getFiltered() {
+  let passages = DATA.passages;
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    passages = passages.filter(p =>
+      (p.content_zh || '').toLowerCase().includes(q) ||
+      (p.content || '').toLowerCase().includes(q) ||
+      (p.name || '').toLowerCase().includes(q) ||
+      (p.group || '').toLowerCase().includes(q) ||
+      (p.group_zh || '').includes(q)
+    );
   }
-  renderView();
+  return passages;
 }
 
-function renderView() {
-  const c = document.getElementById('content');
-  switch (currentView) {
-    case 'chapters': renderChapters(c); break;
-    case 'characters': renderCharacters(c); break;
-    case 'locations': renderLocations(c); break;
-    case 'endings': renderEndings(c); break;
-    case 'reader': renderReader(c); break;
+// === Auto Title ===
+function getPassageTitle(p) {
+  // If passage has a meaningful title (not just an ID like "g7" or "passage_12")
+  const name = p.name || '';
+  if (name && !/^(g\d|passage_|p\d|#|\d+$)/.test(name) && name.length > 2 && name.length < 80) {
+    return name;
   }
-  c.scrollTop = 0;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// Harlowe Markup Cleaning
-// ═══════════════════════════════════════════════════════════════
-function cleanHarlowe(text) {
-  if (!text) return '';
-  let s = text;
-  // Remove (set:...), (if:...), (else-if:...), (else:), (unless:...)
-  // Handle nested parentheses
-  s = s.replace(/\((?:set|put|move):[^)]*\)/g, '');
-  s = s.replace(/\((?:if|else-if|else|unless):[^)]*\)\s*\[/g, '');
-  // Remove (display:...), (goto:...), (link-goto:...), (link-reveal-goto:...)
-  s = s.replace(/\(display:\s*"[^"]*"\)/g, '');
-  s = s.replace(/\(display:\s*\$\w+\)/g, '');
-  s = s.replace(/\(goto:\s*"[^"]*"\)/g, '');
-  s = s.replace(/\(link-goto:\s*"([^"]*)"\s*,\s*"[^"]*"\)/g, '$1');
-  s = s.replace(/\(link-reveal-goto:\s*"([^"]*)"\)\s*\[([^\]]*)\]/g, '$1');
-  // Remove (print:...), (live:...), (stop:), (event:...) etc
-  s = s.replace(/\(\w+(?:-\w+)*:[^)]*\)/g, '');
-  s = s.replace(/\((?:else|stop)\)/g, '');
-  // Remove $var[...] patterns (Harlowe inline text)
-  s = s.replace(/\$\w+\[([^\]]*)\]/g, '$1');
-  // Remove bare $variables
-  s = s.replace(/\$\w+/g, '');
-  // Remove [[link->dest]] → show link text
-  s = s.replace(/\[\[([^|\]]+?)\s*->\s*[^\]]+?\]\]/g, '[$1]');
-  s = s.replace(/\[\[([^|\]]+?)\s*\|\s*[^\]]+?\]\]/g, '[$1]');
-  s = s.replace(/\[\[([^\]]+?)\]\]/g, '[$1]');
-  // Remove HTML tags (keeping <br> as newline)
-  s = s.replace(/<br\s*\/?>/gi, '\n');
-  s = s.replace(/<div[^>]*>/gi, '\n');
-  s = s.replace(/<\/div>/gi, '\n');
-  s = s.replace(/<img[^>]*>/gi, '');
-  s = s.replace(/<[^>]+>/g, '');
-  // Remove Harlowe formatting
-  s = s.replace(/\/\//g, '');  // italic markers
-  s = s.replace(/\*\*/g, '');  // bold markers
-  // Remove leftover brackets
-  s = s.replace(/\]\[/g, ' ');
-  s = s.replace(/[\[\]]/g, '');
-  // Clean up whitespace
-  s = s.replace(/\n{3,}/g, '\n\n');
-  s = s.trim();
-  return s;
-}
-
-function getPassageText(p) {
-  if (!p) return { zh: '', en: '' };
-  const zh = p.content_zh || '';
-  const en = cleanHarlowe(p.content || '');
-  return { zh, en };
-}
-
-function showText(p) {
-  const t = getPassageText(p);
-  if (lang === 'zh') return t.zh || t.en;
-  if (lang === 'en') return t.en || t.zh;
-  // both
-  let out = '';
-  if (t.zh) out += t.zh;
-  if (t.en && t.zh) out += '\n\n--- Original ---\n' + t.en;
-  else if (t.en) out += t.en;
-  return out;
-}
-
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 1. Chapters View
-// ═══════════════════════════════════════════════════════════════
-function renderChapters(container) {
-  const acts = STRUCT.story_arcs.acts;
-  const routes = STRUCT.story_arcs.routes;
-
-  let html = '<div class="timeline">';
-
-  // Acts
-  acts.forEach((act, i) => {
-    const nameShow = lang === 'en' ? act.name : act.name_zh;
-    const desc = lang === 'en' ? (act.desc || act.desc_zh) : act.desc_zh;
-    html += `
-      <div class="timeline-item ${i === 0 ? 'active' : ''}">
-        <div class="card">
-          <h3>${esc(nameShow)}</h3>
-          <div class="sub">${lang !== 'zh' ? esc(act.name) : ''}</div>
-          <p>${esc(desc)}</p>
-          <div class="card-row">
-            <span class="tag tag-accent">${act.passage_count} 段落</span>
-            ${act.key_passages.map(kp =>
-              `<span class="tag tag-purple" style="cursor:pointer" onclick="goReader('${esc(kp.name)}')">${esc(kp.name)}</span>`
-            ).join('')}
-          </div>
-        </div>
-      </div>
-    `;
-  });
-  html += '</div>';
-
-  // Character Routes
-  html += `<div class="section-header" onclick="toggleSection(this)">
-    <span class="section-arrow">&#9654;</span>
-    <h2>${lang === 'en' ? 'Character Routes' : '角色路線'}</h2>
-    <span class="count">${routes.length} ${lang === 'en' ? 'routes' : '條路線'}</span>
-  </div>
-  <div class="section-body">`;
-
-  routes.forEach(route => {
-    const nameShow = lang === 'en' ? route.name : route.name_zh;
-    const desc = lang === 'en' ? (route.desc || route.desc_zh) : route.desc_zh;
-    html += `
-      <div class="card">
-        <h3>${esc(nameShow)}</h3>
-        <p>${esc(desc)}</p>
-        <div class="card-row">
-          <span class="tag tag-accent">${route.passage_count} 段落</span>
-          <span class="tag tag-gold">${route.endings.length} 結局</span>
-          ${route.endings.slice(0, 3).map(e =>
-            `<span class="tag tag-teal" style="cursor:pointer" onclick="goReader('${esc(e.name)}')">${esc(e.name)}</span>`
-          ).join('')}
-        </div>
-      </div>
-    `;
-  });
-  html += '</div>';
-
-  container.innerHTML = html;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 2. Characters View
-// ═══════════════════════════════════════════════════════════════
-function renderCharacters(container) {
-  const chars = STRUCT.characters;
-  let html = '';
-
-  for (const [name, info] of Object.entries(chars)) {
-    const role = lang === 'en' ? info.role : info.role_zh;
-    const desc = lang === 'en' ? info.desc : info.desc_zh;
-    html += `
-      <div class="char-card">
-        <div>
-          <h3>${esc(name)}</h3>
-          <div class="role">${esc(role)}</div>
-          <div class="desc">${esc(desc)}</div>
-          <div class="card-row">
-            ${info.top_locations.slice(0, 6).map(t =>
-              `<span class="tag tag-teal">${esc(t)}</span>`
-            ).join('')}
-          </div>
-          ${info.endings.length > 0 ? `
-            <div class="card-row" style="margin-top:6px">
-              <span class="tag tag-gold">${info.endings.length} ${lang === 'en' ? 'endings' : '個結局'}</span>
-              ${info.endings.slice(0, 3).map(e =>
-                `<span class="tag tag-purple" style="cursor:pointer" onclick="goReader('${esc(e.name)}')">${esc(e.name)}</span>`
-              ).join('')}
-            </div>
-          ` : ''}
-        </div>
-        <div class="char-stats">
-          <div class="stat-box">
-            <div class="num">${info.passage_count}</div>
-            <div class="label">${lang === 'en' ? 'passages' : '段落'}</div>
-          </div>
-          <div class="stat-box" style="cursor:pointer" onclick="goReader('${esc(info.sample_passages[0] || '')}')">
-            <div class="num" style="font-size:14px">#${info.first_pid || '?'}</div>
-            <div class="label">${lang === 'en' ? 'first' : '首次出現'}</div>
-          </div>
-        </div>
-      </div>
-    `;
+  // Extract first sentence from Chinese content
+  if (p.content_zh) {
+    const first = p.content_zh.split(/[。！？\n]/)[0];
+    if (first && first.length > 4) {
+      return first.length > 60 ? first.substring(0, 57) + '...' : first;
+    }
   }
-  container.innerHTML = html;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 3. Locations View
-// ═══════════════════════════════════════════════════════════════
-function renderLocations(container) {
-  const locs = STRUCT.locations;
-  // Sort by order
-  const sorted = Object.entries(locs).sort((a, b) => a[1].order - b[1].order);
-
-  // Group into areas
-  const areas = [
-    { name: lang === 'en' ? 'The Crooked Elm Manor' : '歪曲榆樹莊園', ids: ['mansion_entrance', 'mansion_ground', 'mansion_floor1', 'mansion_floor2', 'mansion_floor3', 'mansion_basement'] },
-    { name: lang === 'en' ? 'Manor Grounds' : '莊園周邊', ids: ['garden'] },
-    { name: lang === 'en' ? 'Village & Surroundings' : '村莊與周邊', ids: ['village', 'sabrina_house'] },
-    { name: lang === 'en' ? 'Wilderness' : '荒野', ids: ['forest', 'path', 'cemetery'] },
-    { name: lang === 'en' ? 'Dark Places' : '黑暗之地', ids: ['temple', 'underground', 'club'] },
-    { name: lang === 'en' ? 'Supernatural' : '超自然', ids: ['supernatural', 'special'] },
-  ];
-
-  let html = '';
-  areas.forEach(area => {
-    const totalCount = area.ids.reduce((sum, id) => sum + (locs[id]?.count || 0), 0);
-    html += `<div class="section-header" onclick="toggleSection(this)">
-      <span class="section-arrow open">&#9654;</span>
-      <h2>${esc(area.name)}</h2>
-      <span class="count">${totalCount} ${lang === 'en' ? 'passages' : '段落'}</span>
-    </div>
-    <div class="section-body open"><div class="loc-grid">`;
-
-    area.ids.forEach(id => {
-      const loc = locs[id];
-      if (!loc) return;
-      const name = lang === 'en' ? loc.name : loc.name_zh;
-      const nameAlt = lang === 'en' ? loc.name_zh : loc.name;
-      html += `
-        <div class="loc-card">
-          <h4>${esc(name)}</h4>
-          <div class="loc-en">${esc(nameAlt)}</div>
-          <div class="loc-count">
-            <b style="color:var(--accent)">${loc.count}</b> ${lang === 'en' ? 'passages' : '段落'}
-          </div>
-          ${loc.sample_passages ? `
-            <div class="card-row" style="margin-top:6px">
-              ${loc.sample_passages.slice(0, 4).map(sp =>
-                `<span class="tag tag-teal" style="cursor:pointer;font-size:10px" onclick="goReader('${esc(sp.name)}')">${esc(sp.name.length > 25 ? sp.name.slice(0, 22) + '...' : sp.name)}</span>`
-              ).join('')}
-            </div>
-          ` : ''}
-        </div>
-      `;
-    });
-    html += '</div></div>';
-  });
-
-  container.innerHTML = html;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 4. Endings View
-// ═══════════════════════════════════════════════════════════════
-function renderEndings(container) {
-  const e = STRUCT.endings;
-
-  const sections = [
-    {
-      title: lang === 'en' ? 'True Endings' : '真結局',
-      icon: '\u2605',
-      color: 'var(--gold)',
-      items: e.true_endings,
-    },
-    {
-      title: lang === 'en' ? 'Bad Endings' : '壞結局',
-      icon: '\u26A0',
-      color: 'var(--warning)',
-      items: e.bad_endings,
-    },
-    {
-      title: lang === 'en' ? 'Deaths' : '死亡段落',
-      icon: '\u2620',
-      color: 'var(--danger)',
-      items: e.deaths,
-    },
-  ];
-
-  let html = `<div style="margin-bottom:16px;font-size:13px;color:var(--text2)">
-    ${lang === 'en' ? 'Total' : '共計'} <b style="color:var(--accent)">${e.total}</b>
-    ${lang === 'en' ? 'endings discovered' : '個結局'}
-  </div>`;
-
-  sections.forEach(sec => {
-    html += `<div class="section-header" onclick="toggleSection(this)">
-      <span class="section-arrow open">&#9654;</span>
-      <h2><span style="color:${sec.color}">${sec.icon}</span> ${esc(sec.title)}</h2>
-      <span class="count">${sec.items.length}</span>
-    </div>
-    <div class="section-body open">`;
-
-    sec.items.forEach(item => {
-      html += `
-        <div class="ending-card" style="cursor:pointer" onclick="goReader('${esc(item.name)}')">
-          <div class="ending-icon" style="color:${sec.color}">${sec.icon}</div>
-          <div class="ending-info">
-            <h4>${esc(item.name)}</h4>
-            <div class="excerpt">${esc(item.excerpt || '')}</div>
-            <div class="card-row">
-              ${item.tags.filter(t => t && t !== 'truend' && t !== 'badend').map(t =>
-                `<span class="tag tag-teal">${esc(t)}</span>`
-              ).join('')}
-              ${item.reachable_from_start ?
-                `<span class="tag tag-green">${lang === 'en' ? 'reachable' : '可達'}</span>` :
-                `<span class="tag tag-red">${lang === 'en' ? 'gated' : '條件門控'}</span>`}
-              <span class="tag tag-purple">#${item.pid}</span>
-            </div>
-          </div>
-        </div>
-      `;
-    });
-    html += '</div>';
-  });
-
-  container.innerHTML = html;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 5. Interactive Reader
-// ═══════════════════════════════════════════════════════════════
-function renderReader(container) {
-  if (!readerCurrent) {
-    navigateReader(STRUCT.meta.start_passage || 'Start');
-    return;
+  // Extract from English content
+  if (p.content) {
+    const first = p.content.split(/[.!?\n]/)[0];
+    if (first && first.length > 4) {
+      return first.length > 60 ? first.substring(0, 57) + '...' : first;
+    }
   }
-  const p = byName[readerCurrent];
-  if (!p) {
-    container.innerHTML = `<div class="loading">
-      <div style="color:var(--danger)">段落不存在: ${esc(readerCurrent)}</div>
-      <button class="reader-nav-btn" onclick="navigateReader('Start')" style="margin-top:16px">
-        ${lang === 'en' ? 'Go to Start' : '回到開頭'}
-      </button>
-    </div>`;
-    return;
+  return name || `段落 ${p.pid}`;
+}
+
+// === Passage HTML ===
+function passageHtml(p, idx) {
+  const title = getPassageTitle(p);
+  const pid = p.pid != null ? `<span class="pid">#${p.pid}</span>` : '';
+  const pname = showName && p.name ? `<div class="pname">${escHtml(p.name)}</div>` : '';
+  const tags = (p.tags && p.tags.length > 0)
+    ? `<div class="tag-row">${p.tags.map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}</div>`
+    : '';
+
+  let textHtml = '';
+  if (showZh && p.content_zh) {
+    textHtml += `<div class="text">${formatText(p.content_zh)}</div>`;
   }
-
-  const text = showText(p);
-  const graph = STRUCT.reader_graph[readerCurrent];
-  const choices = graph?.choices || [];
-  const embeds = graph?.embeds || [];
-
-  let html = '';
-
-  // Navigation bar
-  html += `<div class="reader-nav">
-    <button class="reader-nav-btn" onclick="readerBack()" ${readerHistory.length === 0 ? 'disabled' : ''}>
-      &#9664; ${lang === 'en' ? 'Back' : '返回'}
-    </button>
-    <button class="reader-nav-btn" onclick="navigateReader('Start')">
-      &#9632; ${lang === 'en' ? 'Start' : '從頭開始'}
-    </button>
-    <div class="reader-breadcrumb">
-      ${readerHistory.slice(-5).map(h => `<span>${esc(h.length > 20 ? h.slice(0,17)+'...' : h)}</span><span style="color:var(--text3)">&#9654;</span>`).join('')}
-      <span style="color:var(--accent)">${esc(readerCurrent)}</span>
-    </div>
-    <span style="font-size:11px;color:var(--text3)">#${p.pid}</span>
-  </div>`;
-
-  // Main passage
-  html += `<div class="reader-passage">
-    <h3>${esc(readerCurrent)}</h3>
-    <div class="reader-text">${esc(text)}</div>`;
-
-  // English original if in both mode and we showed zh
-  if (lang === 'both') {
-    // already handled in showText
-  } else if (lang === 'zh' && p.content) {
-    const en = cleanHarlowe(p.content);
-    if (en) {
-      html += `<div class="reader-text-en">${esc(en)}</div>`;
+  if (showEn && p.content) {
+    if (showZh && p.content_zh) {
+      const isLong = p.content.length > 300;
+      textHtml += `<div class="text-en${isLong ? ' collapsed' : ''}">${formatText(p.content)}</div>`;
+    } else {
+      textHtml += `<div class="text">${formatText(p.content)}</div>`;
+    }
+  }
+  if (!textHtml) {
+    if (p.content_zh) {
+      textHtml = `<div class="text">${formatText(p.content_zh)}</div>`;
+    } else if (p.content) {
+      textHtml = `<div class="text">${formatText(p.content)}</div>`;
+    } else {
+      textHtml = `<div class="text" style="color:var(--text3)">（無內容）</div>`;
     }
   }
 
-  // Embedded passages (display:)
-  if (embeds.length > 0) {
-    html += '<div class="reader-embeds">';
-    html += `<div class="embed-label">${lang === 'en' ? 'Embedded Content' : '嵌入內容'}</div>`;
-    const seen = new Set();
-    embeds.forEach(ename => {
-      if (seen.has(ename)) return;
-      seen.add(ename);
-      const ep = byName[ename];
-      if (!ep) return;
-      const et = showText(ep);
-      if (et.length < 5) return; // skip trivial embeds
-      html += `<div style="margin-bottom:8px;padding:8px 0;border-bottom:1px dashed var(--border)">
-        <div style="font-size:10px;color:var(--text3);margin-bottom:4px">${esc(ename)}</div>
-        <div style="font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap">${esc(et.slice(0, 500))}</div>
-      </div>`;
-    });
-    html += '</div>';
+  return `<div class="passage">
+    <div class="passage-header">
+      <span class="passage-title">${escHtml(title)}</span>
+      ${pid}
+    </div>
+    ${pname}${tags}${textHtml}
+  </div>`;
+}
+
+function formatText(s) {
+  if (!s) return '';
+  // Escape HTML, then convert \n to <br> for proper line breaks
+  let html = escHtml(s);
+  // Convert ![img](url) to <img> tags (after escHtml so we need to match escaped form)
+  html = html.replace(/!\[img\]\(([^)]+)\)/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
+  // Convert double newlines to paragraph breaks, single to <br>
+  html = html.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
+  return '<p>' + html + '</p>';
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// === Group View ===
+function renderGroupView(passages) {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  const groups = groupPassages(passages);
+
+  if (groups.length === 0) {
+    content.innerHTML = '<div class="empty-state">未找到匹配的段落</div>';
+    return;
   }
 
-  html += '</div>';
+  let total = 0;
+  groups.forEach(([gName, gPassages]) => {
+    total += gPassages.length;
+    const isOpen = openGroups.has(gName);
 
-  // Choices
-  if (choices.length > 0) {
-    html += '<div class="reader-choices" style="max-width:780px;margin:0 auto">';
-    choices.forEach(cname => {
-      const cp = byName[cname];
-      const label = cp ? (cname.length > 50 ? cname.slice(0, 47) + '...' : cname) : cname;
-      html += `<button class="reader-choice" onclick="navigateReader('${esc(cname)}')">
-        <span class="arrow">&#9654;</span>
-        <span>${esc(label)}</span>
-      </button>`;
-    });
-    html += '</div>';
-  } else {
-    // Dead end
-    html += `<div style="text-align:center;padding:20px;max-width:780px;margin:0 auto">
-      <div style="font-size:14px;color:var(--text2);margin-bottom:12px">
-        ${lang === 'en' ? 'No further choices from this passage.' : '此段落沒有後續選擇。'}
+    // Find group info
+    const gInfo = (DATA.groups || []).find(g => g.id === gName);
+    const displayName = gInfo ? (gInfo.name_zh || gInfo.name || gName) : gName;
+    const displayNameEn = gInfo && gInfo.name_zh && gInfo.name !== gInfo.name_zh ? gInfo.name : '';
+
+    const header = document.createElement('div');
+    header.className = 'group-header';
+    header.innerHTML = `
+      <span class="group-arrow${isOpen ? ' open' : ''}">▶</span>
+      <div class="group-info">
+        <h2>${escHtml(displayName)}</h2>
+        ${displayNameEn ? `<div class="group-name-en">${escHtml(displayNameEn)}</div>` : ''}
       </div>
-      <button class="reader-nav-btn" onclick="readerBack()">
-        &#9664; ${lang === 'en' ? 'Go back' : '返回上一步'}
-      </button>
-    </div>`;
-  }
+      <div class="group-stats"><b>${gPassages.length}</b> 段落</div>
+    `;
 
-  container.innerHTML = html;
+    const body = document.createElement('div');
+    body.className = 'group-body' + (isOpen ? ' open' : '');
+
+    header.addEventListener('click', () => {
+      const nowOpen = body.classList.toggle('open');
+      header.querySelector('.group-arrow').classList.toggle('open', nowOpen);
+      if (nowOpen) {
+        openGroups.add(gName);
+        if (!body.dataset.rendered) {
+          renderPassageChunked(body, gPassages, 0);
+          body.dataset.rendered = '1';
+        }
+      } else {
+        openGroups.delete(gName);
+      }
+    });
+
+    // Auto-render if was open
+    if (isOpen && !body.dataset.rendered) {
+      renderPassageChunked(body, gPassages, 0);
+      body.dataset.rendered = '1';
+    }
+
+    content.appendChild(header);
+    content.appendChild(body);
+  });
 }
 
-function navigateReader(name) {
-  if (readerCurrent && readerCurrent !== name) {
-    readerHistory.push(readerCurrent);
+// === Grouping (respects DATA.groups order from JSON) ===
+function groupPassages(passages) {
+  const groups = new Map();
+  passages.forEach(p => {
+    const g = p.group || '（未分類）';
+    if (!groups.has(g)) groups.set(g, []);
+    groups.get(g).push(p);
+  });
+  // Use DATA.groups order if available, otherwise fallback to count-based sort
+  if (DATA.groups && DATA.groups.length > 0) {
+    const ordered = [];
+    const seen = new Set();
+    DATA.groups.forEach(gi => {
+      const key = gi.id || gi.name;
+      if (groups.has(key)) {
+        ordered.push([key, groups.get(key)]);
+        seen.add(key);
+      }
+    });
+    // Append any groups not in DATA.groups
+    groups.forEach((v, k) => { if (!seen.has(k)) ordered.push([k, v]); });
+    return ordered;
   }
-  readerCurrent = name;
-  location.hash = 'reader/' + encodeURIComponent(name);
-  if (currentView === 'reader') {
-    renderReader(document.getElementById('content'));
-    document.getElementById('content').scrollTop = 0;
+  return Array.from(groups.entries()).sort((a, b) => b[1].length - a[1].length);
+}
+
+// === All View ===
+function renderAllView(passages) {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  if (passages.length === 0) {
+    content.innerHTML = '<div class="empty-state">未找到匹配的段落</div>';
+    return;
+  }
+  renderPassageChunked(content, passages, 0);
+}
+
+// === Chunked Rendering ===
+function renderPassageChunked(container, passages, startIdx) {
+  const CHUNK = 80;
+  const end = Math.min(startIdx + CHUNK, passages.length);
+  let html = '';
+  for (let i = startIdx; i < end; i++) {
+    html += passageHtml(passages[i], i);
+  }
+  container.insertAdjacentHTML('beforeend', html);
+
+  if (end < passages.length) {
+    const sentinel = document.createElement('div');
+    sentinel.className = 'loading';
+    sentinel.style.padding = '20px';
+    sentinel.innerHTML = `<div style="font-size:12px;color:var(--text3)">載入更多 (${end}/${passages.length})...</div>`;
+    container.appendChild(sentinel);
+
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        obs.disconnect();
+        sentinel.remove();
+        renderPassageChunked(container, passages, end);
+      }
+    });
+    obs.observe(sentinel);
   }
 }
 
-function readerBack() {
-  if (readerHistory.length > 0) {
-    readerCurrent = readerHistory.pop();
-    location.hash = 'reader/' + encodeURIComponent(readerCurrent);
-    renderReader(document.getElementById('content'));
-    document.getElementById('content').scrollTop = 0;
+// === Render ===
+function resetAndRender() {
+  const passages = getFiltered();
+  if (currentView === 'group') {
+    renderGroupView(passages);
+  } else {
+    renderAllView(passages);
   }
 }
 
-function goReader(name) {
-  readerHistory = [];
-  readerCurrent = null;
-  switchView('reader');
-  navigateReader(name);
+function setActiveView(view) {
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(view === 'group' ? 'viewGroup' : 'viewAll').classList.add('active');
+  resetAndRender();
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Helpers
-// ═══════════════════════════════════════════════════════════════
-function toggleSection(el) {
-  const arrow = el.querySelector('.section-arrow');
-  const body = el.nextElementSibling;
-  if (body) {
-    body.classList.toggle('open');
-    arrow.classList.toggle('open');
-  }
+// === Init ===
+function init() {
+  renderBanner();
+
+  let searchTimeout;
+  document.getElementById('searchBox').addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      searchQuery = e.target.value.trim();
+      resetAndRender();
+    }, 300);
+  });
+
+  document.getElementById('showZh').addEventListener('change', (e) => {
+    showZh = e.target.checked;
+    clearRenderedCache();
+    resetAndRender();
+  });
+  document.getElementById('showEn').addEventListener('change', (e) => {
+    showEn = e.target.checked;
+    clearRenderedCache();
+    resetAndRender();
+  });
+  document.getElementById('showName').addEventListener('change', (e) => {
+    showName = e.target.checked;
+    clearRenderedCache();
+    resetAndRender();
+  });
+
+  document.getElementById('viewGroup').addEventListener('click', () => setActiveView('group'));
+  document.getElementById('viewAll').addEventListener('click', () => setActiveView('all'));
+
+  resetAndRender();
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Init
-// ═══════════════════════════════════════════════════════════════
+function clearRenderedCache() {
+  openGroups.clear();
+  document.querySelectorAll('.group-body').forEach(div => {
+    div.dataset.rendered = '';
+  });
+}
+
 loadData();
 </script>
 </body>
