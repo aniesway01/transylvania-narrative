@@ -548,12 +548,12 @@ function formatText(s) {
     if (!/class=/.test(tag)) tag = tag.replace('<img', '<img class="passage-img"');
     if (!/loading=/.test(tag)) tag = tag.replace('<img', '<img loading="lazy"');
     imgs.push(tag);
-    return ' IMG' + i + ' ';
+    return `\x00IMG${i}\x00`;
   });
   // Escape remaining HTML
   let html = escHtml(safe);
   // Restore <img> tags from placeholders
-  html = html.replace(/ IMG(\d+) /g, (_, i) => imgs[+i]);
+  html = html.replace(/\x00IMG(\d+)\x00/g, (_, i) => imgs[+i]);
   // Convert ![img](url) markdown syntax
   html = html.replace(/!\[img\]\(([^)]+)\)/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
   // Convert Twine [img[path]] and [img[path][link]] syntax
@@ -561,10 +561,7 @@ function formatText(s) {
   // Convert [image: path] syntax
   html = html.replace(/\[image:\s*\.?\/?([^\]]+)\]/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
   // Convert double newlines to paragraph breaks, single to <br>
-  html = html.replace(/
-
-+/g, '</p><p>').replace(/
-/g, '<br>');
+  html = html.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
   return '<p>' + html + '</p>';
 }
 
