@@ -317,7 +317,63 @@ body {
   border-radius: 8px;
   margin: 8px 0;
   display: block;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+.passage-img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(220,38,38,0.3);
+}
+
+/* === Lightbox === */
+.lightbox-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+.lightbox-overlay.active { display: flex; }
+.lightbox-overlay img {
+  max-width: 92vw;
+  max-height: 90vh;
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(220,38,38,0.3);
+  cursor: default;
+}
+.lightbox-close {
+  position: absolute;
+  top: 16px; right: 20px;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  z-index: 10000;
+  background: none; border: none;
+  font-family: inherit;
+}
+.lightbox-close:hover { opacity: 1; }
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 36px;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  background: none; border: none;
+  padding: 20px;
+  z-index: 10000;
+}
+.lightbox-nav:hover { opacity: 1; }
+.lightbox-prev { left: 8px; }
+.lightbox-next { right: 8px; }
 
 /* === States === */
 .loading {
@@ -425,6 +481,13 @@ body {
 
 <div class="kb-hint">
   <kbd>/</kbd> 搜尋 &nbsp; <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 切換視圖 &nbsp; <kbd>Esc</kbd> 清除
+</div>
+
+<div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(event)">&times;</button>
+  <button class="lightbox-nav lightbox-prev" onclick="navLightbox(-1,event)">&#8249;</button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav lightbox-next" onclick="navLightbox(1,event)">&#8250;</button>
 </div>
 
 <script>
@@ -552,12 +615,25 @@ function formatText(s) {
   if (!s) return '';
   let text = s;
   const imgs = [];
+  // Extract <img> tags before escaping — preserve src for lightbox
   text = text.replace(/<img\s[^>]*>/gi, m => {
     const i = imgs.length;
-    let tag = m;
-    if (!/class=/.test(tag)) tag = tag.replace('<img', '<img class="passage-img"');
-    if (!/loading=/.test(tag)) tag = tag.replace('<img', '<img loading="lazy"');
-    imgs.push(tag);
+    // Extract src for onclick
+    const srcMatch = m.match(/src=["']([^"']+)["']/i);
+    const src = srcMatch ? srcMatch[1] : '';
+    imgs.push(`<img class="passage-img" src="${src}" loading="lazy" onclick="openLightbox(this.src)" alt="">`);
+    return ' IMG' + i + ' ';
+  });
+  // Also extract [img[path]] and [image: path] patterns
+  text = text.replace(/\[img\[([^\]]+?)\](?:\[[^\]]*\])?\]/gi, (m, src) => {
+    const i = imgs.length;
+    imgs.push(`<img class="passage-img" src="${src}" loading="lazy" onclick="openLightbox(this.src)" alt="">`);
+    return ' IMG' + i + ' ';
+  });
+  text = text.replace(/\[image:\s*([^\]]+)\]/gi, (m, src) => {
+    const i = imgs.length;
+    const cleanSrc = src.trim().replace(/^\.\//, '');
+    imgs.push(`<img class="passage-img" src="${cleanSrc}" loading="lazy" onclick="openLightbox(this.src)" alt="">`);
     return ' IMG' + i + ' ';
   });
   text = text.replace(/<<[^>]*?>>/g, '');
@@ -566,10 +642,8 @@ function formatText(s) {
   text = text.replace(/\[OR\]/g, '\n');
   text = text.replace(/\n{3,}/g, '\n\n').trim();
   let html = escHtml(text);
-  html = html.replace(/ IMG(\d+) /g, (_, i) => imgs[+i]);
-  html = html.replace(/!\[img\]\(([^)]+)\)/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
-  html = html.replace(/\[img\[([^\]]+?)\](?:\[[^\]]*\])?\]/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
-  html = html.replace(/\[image:\s*\.?\/?([^\]]+)\]/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
+  // Restore preserved images
+  html = html.replace(/ IMG(\d+) /g, (_, i) => imgs[+i] || '');
   html = html.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
   return '<p>' + html + '</p>';
 }
@@ -903,6 +977,42 @@ function init() {
 
   resetAndRender();
 }
+
+// === Lightbox ===
+let lightboxImages = [];
+let lightboxIdx = 0;
+
+function openLightbox(src) {
+  // Gather all visible images on page for navigation
+  lightboxImages = Array.from(document.querySelectorAll('.passage-img')).map(el => el.src).filter(Boolean);
+  lightboxIdx = lightboxImages.indexOf(src);
+  if (lightboxIdx === -1) { lightboxImages = [src]; lightboxIdx = 0; }
+  const overlay = document.getElementById('lightboxOverlay');
+  document.getElementById('lightboxImg').src = src;
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if (e && e.target.tagName === 'IMG') return;
+  document.getElementById('lightboxOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function navLightbox(dir, e) {
+  if (e) { e.stopPropagation(); e.preventDefault(); }
+  if (lightboxImages.length <= 1) return;
+  lightboxIdx = (lightboxIdx + dir + lightboxImages.length) % lightboxImages.length;
+  document.getElementById('lightboxImg').src = lightboxImages[lightboxIdx];
+}
+
+document.addEventListener('keydown', e => {
+  const overlay = document.getElementById('lightboxOverlay');
+  if (!overlay.classList.contains('active')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') navLightbox(-1);
+  if (e.key === 'ArrowRight') navLightbox(1);
+});
 
 loadData();
 </script>
