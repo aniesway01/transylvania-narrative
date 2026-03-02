@@ -3,25 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>特蘭西瓦尼亞 — 互動敘事地圖</title>
+<title>乇蘭西瓦尼亞 — 互動敘事地圖</title>
 <style>
 :root {
-  --bg: #0f0f1a;
-  --bg2: #161625;
-  --bg3: #1e1e32;
-  --text: #e8e8f0;
-  --text2: #8888a0;
-  --text3: #555570;
+  --bg: #080608;
+  --bg2: #0f0c10;
+  --bg3: #1a151c;
+  --text: #dcd4e2;
+  --text2: #8a7f94;
+  --text3: #544c5e;
   --accent: #dc2626;
-  --accent2: #533483;
-  --accent-glow: #dc262622;
-  --border: #2a2a42;
-  --card: #1a1a2e;
-  --card-hover: #1e1e36;
-  --tag-bg: rgba(74,153,153,0.15);
-  --tag-text: #5db8b8;
+  --accent2: #7c3aed;
+  --accent-glow: rgba(220,38,38,0.15);
+  --accent2-glow: rgba(124,58,237,0.15);
+  --border: #2a2232;
+  --card: #110e14;
+  --card-hover: #1a1520;
+  --warm: #b45309;
+  --blood: #991b1b;
+  --tag-char: #c084fc;
+  --tag-loc: #f87171;
+  --tag-cond: #a78bfa;
+  --tag-bg: rgba(220,38,38,0.12);
+  --tag-text: #fca5a5;
   --success: #4ade80;
-  --radius: 10px;
+  --radius: 8px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.6);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -34,9 +41,9 @@ body {
 }
 .app { display: flex; height: 100vh; flex-direction: column; }
 
-/* === Game Header Banner === */
+/* === Game Banner === */
 .game-banner {
-  background: linear-gradient(135deg, var(--accent2) 0%, var(--bg3) 50%, var(--bg2) 100%);
+  background: linear-gradient(135deg, #150810 0%, #1a0a14 40%, #0d060f 100%);
   padding: 20px 24px 16px;
   border-bottom: 1px solid var(--border);
   position: relative;
@@ -45,53 +52,50 @@ body {
 .game-banner::before {
   content: '';
   position: absolute;
-  top: 0; right: 0;
-  width: 300px; height: 100%;
-  background: radial-gradient(ellipse at 80% 50%, var(--accent-glow), transparent 70%);
+  top: -40%; right: -5%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(220,38,38,0.08), transparent 60%);
   pointer-events: none;
 }
-.game-banner h1 {
-  font-size: 26px;
+.game-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -60%; left: 15%;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(124,58,237,0.06), transparent 60%);
+  pointer-events: none;
+}
+.banner-top { display: flex; align-items: center; gap: 16px; position: relative; z-index: 1; }
+.banner-icon {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), #4c1d95);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(220,38,38,0.4);
+  border: 1px solid rgba(220,38,38,0.3);
+}
+.banner-text h1 {
+  font-size: 24px;
   font-weight: 700;
   color: #fff;
   letter-spacing: 1px;
-  margin-bottom: 2px;
 }
-.game-banner .subtitle {
-  font-size: 13px;
-  color: rgba(255,255,255,0.45);
-  font-style: italic;
-  margin-bottom: 8px;
-}
-.game-banner .banner-stats {
-  display: flex;
-  gap: 16px;
+.banner-text .subtitle {
   font-size: 12px;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
 }
-.game-banner .banner-stats .stat-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.banner-stats {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  position: relative; z-index: 1;
 }
-.game-banner .banner-stats b { color: var(--accent); }
-.translation-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 600;
-}
-.translation-badge.full {
-  background: rgba(74,222,128,0.15);
-  color: var(--success);
-}
-.translation-badge.partial {
-  background: rgba(251,191,36,0.15);
-  color: #fbbf24;
-}
+.stat-item { display: flex; align-items: center; gap: 4px; }
+.stat-item b { color: var(--accent); }
 
 /* === Toolbar === */
 .toolbar {
@@ -103,6 +107,21 @@ body {
   gap: 10px;
   flex-wrap: wrap;
 }
+.search-wrap {
+  position: relative;
+  flex-shrink: 1;
+  min-width: 140px;
+}
+.search-wrap::before {
+  content: '\1F50D';
+  position: absolute;
+  left: 10px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  pointer-events: none;
+  z-index: 1;
+}
+.search-wrap .search-box { width: 100%; padding-left: 32px; }
 .search-box {
   padding: 6px 14px;
   border-radius: 20px;
@@ -110,9 +129,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-size: 13px;
-  width: 220px;
-  flex-shrink: 1;
-  min-width: 140px;
+  width: 240px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .search-box:focus {
@@ -125,114 +142,107 @@ body {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 .toggle-row {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
+  gap: 4px;
+  font-size: 11px;
   color: var(--text2);
   cursor: pointer;
   white-space: nowrap;
   user-select: none;
 }
-.toggle-row input { accent-color: var(--accent); cursor: pointer; }
+.toggle-row input { accent-color: var(--accent); cursor: pointer; width: 14px; height: 14px; }
 .toggle-row:hover { color: var(--text); }
-.view-toggle { display: flex; gap: 4px; }
+.view-toggle { display: flex; gap: 3px; }
 .view-btn {
-  padding: 5px 14px;
+  padding: 5px 12px;
   border-radius: 6px;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text2);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 .view-btn:hover { background: var(--bg3); color: var(--text); }
 .view-btn.active {
-  background: var(--accent2);
+  background: var(--accent);
   color: #fff;
-  border-color: var(--accent2);
-  box-shadow: 0 2px 8px rgba(83,52,131,0.3);
+  border-color: var(--accent);
+  box-shadow: 0 2px 10px rgba(220,38,38,0.35);
 }
 
-/* === Content Area === */
+/* === Content === */
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 20px 40px;
+  padding: 16px 20px 60px;
   scroll-behavior: smooth;
 }
 
 /* === Group Headers === */
 .group-header {
   width: 100%;
-  background: linear-gradient(135deg, var(--accent2), var(--bg3));
+  background: linear-gradient(135deg, var(--bg3), var(--bg2));
   padding: 14px 20px;
-  margin: 20px 0 6px 0;
+  margin: 16px 0 4px 0;
   border-radius: var(--radius);
   position: sticky;
-  top: 0;
-  z-index: 10;
+  top: 0; z-index: 10;
   cursor: pointer;
   user-select: none;
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: transform 0.1s;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s;
 }
 .group-header:first-child { margin-top: 0; }
-.group-header:active { transform: scale(0.995); }
+.group-header:hover { border-color: var(--accent); }
+.group-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
 .group-arrow {
-  font-size: 12px;
-  color: rgba(255,255,255,0.4);
+  font-size: 10px;
+  color: var(--text3);
   transition: transform 0.2s;
   flex-shrink: 0;
 }
 .group-arrow.open { transform: rotate(90deg); }
 .group-info { flex: 1; min-width: 0; }
 .group-header h2 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-  border: none;
-  padding: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 16px; font-weight: 600; color: #fff;
+  margin: 0; border: none; padding: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .group-header .group-name-en {
-  font-size: 11px;
-  color: rgba(255,255,255,0.35);
-  font-style: italic;
-  margin-top: 1px;
+  font-size: 11px; color: var(--text3); margin-top: 1px;
 }
 .group-header .group-stats {
-  font-size: 12px;
-  color: rgba(255,255,255,0.45);
-  flex-shrink: 0;
+  font-size: 11px; color: var(--text2); flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
 }
 .group-header .group-stats b { color: var(--accent); }
-
-/* === Group Body === */
-.group-body {
-  display: none;
-  padding: 2px 0;
-}
+.group-body { display: none; padding: 2px 0; }
 .group-body.open { display: block; }
 
 /* === Passage Cards === */
 .passage {
   background: var(--card);
   padding: 14px 18px;
-  margin: 5px 0;
+  margin: 4px 0;
   border-radius: 8px;
   border-left: 3px solid transparent;
-  transition: border-color 0.2s, background 0.15s;
+  transition: all 0.2s;
   position: relative;
 }
 .passage:hover {
@@ -241,57 +251,42 @@ body {
 }
 .passage-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .passage-title {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 13px; font-weight: 600;
   color: var(--accent);
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .passage .pid {
+  font-size: 10px; color: var(--text3);
+  font-family: 'Consolas', monospace; flex-shrink: 0;
+}
+.passage .tag-row { margin-bottom: 6px; display: flex; flex-wrap: wrap; gap: 3px; }
+.passage .tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
   font-size: 10px;
-  color: var(--text3);
-  font-family: 'Consolas', monospace;
-  flex-shrink: 0;
+  font-weight: 500;
 }
-.passage .pname {
-  font-size: 11px;
-  color: var(--tag-text);
-  margin-bottom: 4px;
-  font-family: monospace;
-}
+.tag-cond { background: rgba(167,139,250,0.12); color: var(--tag-cond); }
+.tag-default { background: rgba(255,255,255,0.06); color: var(--text2); }
 .passage .text {
-  font-size: 14.5px;
-  line-height: 1.85;
+  font-size: 14px; line-height: 1.85;
   color: var(--text);
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-.passage-img {
-  max-width: 100%;
-  max-height: 400px;
-  border-radius: 8px;
-  margin: 8px 0;
-  display: block;
+  white-space: pre-wrap; word-break: break-word;
 }
 .passage .text-en {
-  font-size: 12px;
-  color: var(--text2);
-  margin-top: 8px;
-  padding-top: 8px;
+  font-size: 12px; color: var(--text2);
+  margin-top: 8px; padding-top: 8px;
   border-top: 1px dashed var(--border);
-  font-style: italic;
-  line-height: 1.6;
+  font-style: italic; line-height: 1.6;
   white-space: pre-wrap;
-  max-height: 150px;
-  overflow: hidden;
+  max-height: 120px; overflow: hidden;
   position: relative;
 }
 .passage .text-en.collapsed::after {
@@ -302,31 +297,31 @@ body {
   background: linear-gradient(transparent, var(--card));
   pointer-events: none;
 }
-.passage .tag-row { margin-bottom: 6px; }
-.passage .tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: var(--tag-bg);
-  color: var(--tag-text);
-  font-size: 11px;
-  margin-right: 4px;
-  margin-bottom: 2px;
+.passage .choices-row {
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; gap: 4px;
 }
-.passage-num {
-  font-size: 10px;
-  color: var(--text3);
-  font-family: monospace;
-  position: absolute;
-  top: 14px;
-  right: 16px;
+.choice-btn {
+  padding: 3px 10px;
+  border-radius: 14px;
+  background: var(--accent-glow);
+  border: 1px solid rgba(220,38,38,0.25);
+  color: var(--accent);
+  font-size: 11px;
+  cursor: default;
+}
+.passage-img {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
+  margin: 8px 0;
+  display: block;
 }
 
-/* === Empty / Loading States === */
+/* === States === */
 .loading {
-  text-align: center;
-  padding: 80px 20px;
-  color: var(--text2);
+  text-align: center; padding: 80px 20px; color: var(--text2);
 }
 .loading .spinner {
   display: inline-block;
@@ -339,45 +334,62 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text2);
-  font-size: 14px;
+  text-align: center; padding: 60px 20px;
+  color: var(--text2); font-size: 14px;
 }
 
 /* === Scrollbar === */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* === Keyboard hint === */
+.kb-hint {
+  position: fixed; bottom: 12px; right: 16px;
+  font-size: 10px; color: var(--text3);
+  pointer-events: none; z-index: 100;
+}
+.kb-hint kbd {
+  padding: 1px 4px; border-radius: 3px;
+  background: var(--bg2); border: 1px solid var(--border);
+  font-family: inherit;
+}
 
 /* === Mobile === */
 @media (max-width: 768px) {
   .game-banner { padding: 16px; }
-  .game-banner h1 { font-size: 22px; }
-  .content { padding: 12px; }
+  .banner-top h1 { font-size: 20px; }
+  .content { padding: 10px 12px 40px; }
   .passage .text { font-size: 15px; line-height: 1.9; }
   .toolbar { padding: 6px 10px; gap: 6px; }
+  .search-wrap { width: 100%; }
   .search-box { width: 100%; }
   .toolbar-right { margin-left: 0; width: 100%; flex-wrap: wrap; justify-content: center; }
   .view-toggle { width: 100%; justify-content: center; }
-  .group-header { padding: 12px 14px; }
-  .group-header h2 { font-size: 16px; }
+  .group-header { padding: 10px 14px; }
+  .group-header h2 { font-size: 15px; }
+  .kb-hint { display: none; }
 }
 </style>
 </head>
 <body>
 <div class="app">
-  <!-- Game Banner -->
   <div class="game-banner">
-    <h1 id="gameTitle">載入中...</h1>
-    <div class="subtitle" id="gameSubtitle"></div>
+    <div class="banner-top">
+      <div class="banner-icon">TV</div>
+      <div class="banner-text">
+        <h1 id="gameTitle">乇蘭西瓦尼亞</h1>
+        <div class="subtitle" id="gameSubtitle">Transylvania | 哥德式吸血鬼冒險</div>
+      </div>
+    </div>
     <div class="banner-stats" id="bannerStats"></div>
   </div>
 
-  <!-- Toolbar -->
   <div class="toolbar">
-    <input type="text" class="search-box" id="searchBox" placeholder="搜尋段落內容...">
+    <div class="search-wrap">
+      <input type="text" class="search-box" id="searchBox" placeholder="搜尋段落、地點、場景...">
+    </div>
     <div class="toolbar-right">
       <label class="toggle-row">
         <input type="checkbox" id="showZh" checked>
@@ -385,20 +397,24 @@ body {
       </label>
       <label class="toggle-row">
         <input type="checkbox" id="showEn">
-        <span>英文原文</span>
+        <span>英文</span>
       </label>
       <label class="toggle-row">
-        <input type="checkbox" id="showName">
-        <span>段落 ID</span>
+        <input type="checkbox" id="showChoices" checked>
+        <span>選項</span>
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" id="showCond">
+        <span>條件</span>
       </label>
       <div class="view-toggle">
-        <button class="view-btn active" data-view="group" id="viewGroup">按分類</button>
-        <button class="view-btn" data-view="all" id="viewAll">全部段落</button>
+        <button class="view-btn active" data-view="narrative" id="viewNarrative">敘事</button>
+        <button class="view-btn" data-view="scene" id="viewScene">場景</button>
+        <button class="view-btn" data-view="all" id="viewAll">全部</button>
       </div>
     </div>
   </div>
 
-  <!-- Content -->
   <div class="content" id="content">
     <div class="loading">
       <div class="spinner"></div>
@@ -407,57 +423,91 @@ body {
   </div>
 </div>
 
-<script>
-// === Config (injected by build script) ===
-const GAME_CONFIG = {"title": "Transylvania", "title_zh": "特蘭西瓦尼亞", "color_accent": "#dc2626"};
+<div class="kb-hint">
+  <kbd>/</kbd> 搜尋 &nbsp; <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 切換視圖 &nbsp; <kbd>Esc</kbd> 清除
+</div>
 
-// === State ===
+<script>
+// ============================================================
+// Transylvania - Enhanced Narrative Viewer
+// Gothic vampire adventure - dark blood/purple theme
+// ============================================================
+
+const CHUNK_SIZE = 60;
+
+const GROUP_ICONS = {
+  'prologue':      ['#9333ea', 'PL'],
+  'gate':          ['#6d28d9', 'GT'],
+  'ground':        ['#dc2626', 'GF'],
+  'floor1':        ['#b91c1c', 'F1'],
+  'floor2':        ['#991b1b', 'F2'],
+  'floor3':        ['#7f1d1d', 'F3'],
+  'basement':      ['#581c87', 'BM'],
+  'garden':        ['#166534', 'GD'],
+  'village':       ['#b45309', 'VL'],
+  'sabrina':       ['#be185d', 'SB'],
+  'temple':        ['#4c1d95', 'TP'],
+  'cemetery':      ['#64748b', 'CM'],
+  'forest':        ['#15803d', 'FR'],
+  'caves':         ['#78350f', 'CV'],
+  'supernatural':  ['#7c3aed', 'SN'],
+  'club':          ['#e11d48', 'NC'],
+  'special':       ['#ea580c', 'SP'],
+  'death':         ['#991b1b', 'DT'],
+  'endings':       ['#f59e0b', 'EN'],
+  'misc':          ['#475569', 'MS'],
+  'system':        ['#334155', 'SY']
+};
+
+const GROUP_NAMES_ZH = {
+  'prologue': '序章', 'gate': '莊園大門與小徑', 'ground': '一樓',
+  'floor1': '二樓', 'floor2': '三樓', 'floor3': '四樓閣樓',
+  'basement': '地下室', 'garden': '莊園花園', 'village': '村莊',
+  'sabrina': 'Sabrina 的小屋', 'temple': '黑暗神殿', 'cemetery': '墓地',
+  'forest': '森林與沼澤', 'caves': '洞穴與地下', 'supernatural': '超自然領域',
+  'club': '夜店', 'special': '特殊事件', 'death': '死亡與變身',
+  'endings': '結局', 'misc': '其他故事段落', 'system': '系統與設定'
+};
+
 let DATA = null;
 let searchQuery = '';
 let showZh = true;
 let showEn = false;
-let showName = false;
-let currentView = 'group';
-let openGroups = new Set();
+let showChoices = true;
+let showCond = false;
+let currentView = 'narrative';
+let openSections = new Set();
 
-// === Data Loading ===
 async function loadData() {
-  const resp = await fetch('data/passages.json?v=' + Date.now());
-  DATA = await resp.json();
-  if (!DATA.meta.has_zh) {
-    document.getElementById('showZh').parentElement.style.display = 'none';
-    showZh = false;
-    showEn = true;
-    document.getElementById('showEn').checked = true;
+  try {
+    const resp = await fetch('data/passages.json?v=' + Date.now());
+    DATA = await resp.json();
+    if (!DATA.meta.has_zh) {
+      document.getElementById('showZh').parentElement.style.display = 'none';
+      showZh = false;
+      showEn = true;
+      document.getElementById('showEn').checked = true;
+    }
+    init();
+  } catch(e) {
+    document.getElementById('content').innerHTML =
+      '<div class="empty-state">載入失敗: ' + e.message + '</div>';
   }
-  init();
 }
 
-// === Banner ===
 function renderBanner() {
   const m = DATA.meta;
-  const titleZh = m.title_zh || m.title || '';
-  const titleEn = m.title || '';
-  document.getElementById('gameTitle').textContent = titleZh;
-  document.getElementById('gameSubtitle').textContent = titleZh !== titleEn ? titleEn : '';
-  document.title = titleZh + ' — 互動敘事地圖';
-
   const total = m.total || DATA.passages.length;
+  const groups = (DATA.groups || []).length;
   const zhCount = m.translated_count || DATA.passages.filter(p => p.content_zh).length;
-  const groupCount = (DATA.groups || []).length;
   const pct = total > 0 ? Math.round(zhCount / total * 100) : 0;
 
-  let badgeClass = pct >= 95 ? 'full' : 'partial';
-  let badgeText = pct >= 95 ? '✓ 翻譯完成' : `${pct}% 已翻譯`;
-
-  document.getElementById('bannerStats').innerHTML = `
-    <span class="stat-item"><b>${groupCount}</b> 分類</span>
-    <span class="stat-item"><b>${total}</b> 段落</span>
-    <span class="translation-badge ${badgeClass}">${badgeText}</span>
-  `;
+  document.getElementById('bannerStats').innerHTML =
+    `<span class="stat-item"><b>${groups}</b> 區域</span>` +
+    `<span class="stat-item"><b>${total.toLocaleString()}</b> 段落</span>` +
+    `<span class="stat-item" style="color:${pct>=95?'#4ade80':'#fbbf24'}">${pct}% 已翻譯</span>`;
 }
 
-// === Filtering ===
 function getFiltered() {
   let passages = DATA.passages;
   if (searchQuery) {
@@ -466,66 +516,117 @@ function getFiltered() {
       (p.content_zh || '').toLowerCase().includes(q) ||
       (p.content || '').toLowerCase().includes(q) ||
       (p.name || '').toLowerCase().includes(q) ||
-      (p.group || '').toLowerCase().includes(q) ||
-      (p.group_zh || '').includes(q)
+      (p.group || '').toLowerCase().includes(q)
     );
   }
   return passages;
 }
 
-// === Auto Title ===
 function getPassageTitle(p) {
-  // If passage has a meaningful title (not just an ID like "g7" or "passage_12")
+  if (p.title && p.title.length > 2 && p.title.length < 80) return p.title;
   const name = p.name || '';
-  if (name && !/^(g\d|passage_|p\d|#|\d+$)/.test(name) && name.length > 2 && name.length < 80) {
-    return name;
-  }
-  // Extract first sentence from Chinese content
+  if (name && !/^(g\d|passage_|p\d|#|\d+$)/.test(name) && name.length > 2 && name.length < 80) return name;
   if (p.content_zh) {
-    const first = p.content_zh.split(/[。！？\n]/)[0];
-    if (first && first.length > 4) {
-      return first.length > 60 ? first.substring(0, 57) + '...' : first;
-    }
+    const first = p.content_zh.replace(/\[.*?\]/g, '').split(/[\u3002\uff01\uff1f\n]/)[0].trim();
+    if (first.length > 4) return first.length > 50 ? first.substring(0, 47) + '...' : first;
   }
-  // Extract from English content
   if (p.content) {
-    const first = p.content.split(/[.!?\n]/)[0];
-    if (first && first.length > 4) {
-      return first.length > 60 ? first.substring(0, 57) + '...' : first;
-    }
+    const first = p.content.replace(/\[.*?\]/g, '').split(/[.!?\n]/)[0].trim();
+    if (first.length > 4) return first.length > 50 ? first.substring(0, 47) + '...' : first;
   }
-  return name || `段落 ${p.pid}`;
+  return name || 'Passage ' + p.pid;
 }
 
-// === Passage HTML ===
-function passageHtml(p, idx) {
+function extractConditions(text) {
+  if (!text) return [];
+  const conds = [];
+  const re = /<<(?:else)?if\s+([^>]+?)>>/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    conds.push(m[1].trim());
+  }
+  return conds;
+}
+
+function formatText(s) {
+  if (!s) return '';
+  let text = s;
+  const imgs = [];
+  text = text.replace(/<img\s[^>]*>/gi, m => {
+    const i = imgs.length;
+    let tag = m;
+    if (!/class=/.test(tag)) tag = tag.replace('<img', '<img class="passage-img"');
+    if (!/loading=/.test(tag)) tag = tag.replace('<img', '<img loading="lazy"');
+    imgs.push(tag);
+    return ' IMG' + i + ' ';
+  });
+  text = text.replace(/<<[^>]*?>>/g, '');
+  text = text.replace(/\[\[([^\]|]*?)(?:\|[^\]]*?)?\]\]/g, '');
+  text = text.replace(/==[^=]*?==/g, '');
+  text = text.replace(/\[OR\]/g, '\n');
+  text = text.replace(/\n{3,}/g, '\n\n').trim();
+  let html = escHtml(text);
+  html = html.replace(/ IMG(\d+) /g, (_, i) => imgs[+i]);
+  html = html.replace(/!\[img\]\(([^)]+)\)/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
+  html = html.replace(/\[img\[([^\]]+?)\](?:\[[^\]]*\])?\]/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
+  html = html.replace(/\[image:\s*\.?\/?([^\]]+)\]/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
+  html = html.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
+  return '<p>' + html + '</p>';
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function passageHtml(p) {
   const title = getPassageTitle(p);
   const pid = p.pid != null ? `<span class="pid">#${p.pid}</span>` : '';
-  const pname = showName && p.name ? `<div class="pname">${escHtml(p.name)}</div>` : '';
+
   const tags = (p.tags && p.tags.length > 0)
-    ? `<div class="tag-row">${p.tags.map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}</div>`
+    ? `<div class="tag-row">${p.tags.map(t => `<span class="tag tag-default">${escHtml(t)}</span>`).join('')}</div>`
     : '';
 
+  let condHtml = '';
+  if (showCond) {
+    const conds = extractConditions(p.content || '');
+    if (conds.length > 0) {
+      condHtml = `<div class="tag-row">${conds.slice(0, 5).map(c =>
+        `<span class="tag tag-cond" title="${escHtml(c)}">${escHtml(c.length > 30 ? c.substring(0,27)+'...' : c)}</span>`
+      ).join('')}</div>`;
+    }
+  }
+
+  const TEXT_LIMIT = 5000;
   let textHtml = '';
   if (showZh && p.content_zh) {
-    textHtml += `<div class="text">${formatText(p.content_zh)}</div>`;
+    const t = p.content_zh.length > TEXT_LIMIT ? p.content_zh.substring(0, TEXT_LIMIT) : p.content_zh;
+    const trunc = p.content_zh.length > TEXT_LIMIT ? `<div style="color:var(--tag-cond);font-size:11px;margin-top:4px">... 內容過長，已截斷</div>` : '';
+    textHtml += `<div class="text">${formatText(t)}</div>${trunc}`;
   }
   if (showEn && p.content) {
+    const t = p.content.length > TEXT_LIMIT ? p.content.substring(0, TEXT_LIMIT) : p.content;
+    const trunc = p.content.length > TEXT_LIMIT ? `<div style="color:var(--tag-cond);font-size:11px;margin-top:4px">... truncated</div>` : '';
     if (showZh && p.content_zh) {
-      const isLong = p.content.length > 300;
-      textHtml += `<div class="text-en${isLong ? ' collapsed' : ''}">${formatText(p.content)}</div>`;
+      const isLong = t.length > 300;
+      textHtml += `<div class="text-en${isLong ? ' collapsed' : ''}">${formatText(t)}</div>${trunc}`;
     } else {
-      textHtml += `<div class="text">${formatText(p.content)}</div>`;
+      textHtml += `<div class="text">${formatText(t)}</div>${trunc}`;
     }
   }
   if (!textHtml) {
-    if (p.content_zh) {
-      textHtml = `<div class="text">${formatText(p.content_zh)}</div>`;
-    } else if (p.content) {
-      textHtml = `<div class="text">${formatText(p.content)}</div>`;
-    } else {
-      textHtml = `<div class="text" style="color:var(--text3)">（無內容）</div>`;
-    }
+    textHtml = p.content_zh
+      ? `<div class="text">${formatText(p.content_zh)}</div>`
+      : p.content
+        ? `<div class="text">${formatText(p.content)}</div>`
+        : '<div class="text" style="color:var(--text3)">(empty)</div>';
+  }
+
+  let choicesHtml = '';
+  if (showChoices && p.choices && p.choices.length > 0) {
+    choicesHtml = `<div class="choices-row">${p.choices.slice(0, 20).map(c =>
+      `<span class="choice-btn" title="-> ${escHtml(c.target || '')}">${escHtml(c.text)}</span>`
+    ).join('')}</div>`;
   }
 
   return `<div class="passage">
@@ -533,45 +634,37 @@ function passageHtml(p, idx) {
       <span class="passage-title">${escHtml(title)}</span>
       ${pid}
     </div>
-    ${pname}${tags}${textHtml}
+    ${tags}${condHtml}${textHtml}${choicesHtml}
   </div>`;
 }
 
-function formatText(s) {
-  if (!s) return '';
-  // Extract <img> tags before escaping, replace with placeholders
-  const imgs = [];
-  let safe = s.replace(/<img\s[^>]*>/gi, m => {
-    const i = imgs.length;
-    // Ensure class and lazy loading
-    let tag = m;
-    if (!/class=/.test(tag)) tag = tag.replace('<img', '<img class="passage-img"');
-    if (!/loading=/.test(tag)) tag = tag.replace('<img', '<img loading="lazy"');
-    imgs.push(tag);
-    return `\x00IMG${i}\x00`;
-  });
-  // Escape remaining HTML
-  let html = escHtml(safe);
-  // Restore <img> tags from placeholders
-  html = html.replace(/\x00IMG(\d+)\x00/g, (_, i) => imgs[+i]);
-  // Convert ![img](url) markdown syntax
-  html = html.replace(/!\[img\]\(([^)]+)\)/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
-  // Convert Twine [img[path]] and [img[path][link]] syntax
-  html = html.replace(/\[img\[([^\]]+?)\](?:\[[^\]]*\])?\]/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
-  // Convert [image: path] syntax
-  html = html.replace(/\[image:\s*\.?\/?([^\]]+)\]/g, '<img src="$1" class="passage-img" loading="lazy" alt="">');
-  // Convert double newlines to paragraph breaks, single to <br>
-  html = html.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
-  return '<p>' + html + '</p>';
+function renderChunked(container, passages, startIdx) {
+  const end = Math.min(startIdx + CHUNK_SIZE, passages.length);
+  let html = '';
+  for (let i = startIdx; i < end; i++) {
+    html += passageHtml(passages[i]);
+  }
+  container.insertAdjacentHTML('beforeend', html);
+
+  if (end < passages.length) {
+    const sentinel = document.createElement('div');
+    sentinel.className = 'loading';
+    sentinel.style.padding = '16px';
+    sentinel.innerHTML = `<div style="font-size:11px;color:var(--text3)">載入更多 (${end}/${passages.length})...</div>`;
+    container.appendChild(sentinel);
+
+    const obs = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        obs.disconnect();
+        sentinel.remove();
+        renderChunked(container, passages, end);
+      }
+    });
+    obs.observe(sentinel);
+  }
 }
 
-function escHtml(s) {
-  if (!s) return '';
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-// === Group View ===
-function renderGroupView(passages) {
+function renderNarrativeView(passages) {
   const content = document.getElementById('content');
   content.innerHTML = '';
   const groups = groupPassages(passages);
@@ -581,23 +674,138 @@ function renderGroupView(passages) {
     return;
   }
 
-  let total = 0;
   groups.forEach(([gName, gPassages]) => {
-    total += gPassages.length;
-    const isOpen = openGroups.has(gName);
-
-    // Find group info
+    const isOpen = openSections.has('g:' + gName);
+    const icon = GROUP_ICONS[gName] || ['#475569', gName.substring(0,2).toUpperCase()];
     const gInfo = (DATA.groups || []).find(g => g.id === gName);
-    const displayName = gInfo ? (gInfo.name_zh || gInfo.name || gName) : gName;
-    const displayNameEn = gInfo && gInfo.name_zh && gInfo.name !== gInfo.name_zh ? gInfo.name : '';
+    const nameZh = (gInfo && gInfo.name_zh) || GROUP_NAMES_ZH[gName] || gName;
+    const nameEn = (gInfo && gInfo.name) || gName;
+
+    const header = document.createElement('div');
+    header.className = 'group-header';
+
+    // Location-specific gradients
+    const gradients = {
+      'prologue':     'linear-gradient(135deg, #1a0f28, var(--bg2))',
+      'gate':         'linear-gradient(135deg, #15102a, var(--bg2))',
+      'ground':       'linear-gradient(135deg, #1a0a0a, var(--bg2))',
+      'floor1':       'linear-gradient(135deg, #1a0808, var(--bg2))',
+      'floor2':       'linear-gradient(135deg, #180610, var(--bg2))',
+      'floor3':       'linear-gradient(135deg, #150508, var(--bg2))',
+      'basement':     'linear-gradient(135deg, #0f0818, var(--bg2))',
+      'garden':       'linear-gradient(135deg, #081a0a, var(--bg2))',
+      'village':      'linear-gradient(135deg, #1a1208, var(--bg2))',
+      'sabrina':      'linear-gradient(135deg, #1a0818, var(--bg2))',
+      'temple':       'linear-gradient(135deg, #0a0520, var(--bg2))',
+      'cemetery':     'linear-gradient(135deg, #101218, var(--bg2))',
+      'forest':       'linear-gradient(135deg, #081510, var(--bg2))',
+      'caves':        'linear-gradient(135deg, #150f08, var(--bg2))',
+      'supernatural': 'linear-gradient(135deg, #100520, var(--bg2))',
+      'club':         'linear-gradient(135deg, #1a0810, var(--bg2))',
+      'special':      'linear-gradient(135deg, #1a1008, var(--bg2))',
+      'death':        'linear-gradient(135deg, #1a0505, var(--bg2))',
+      'endings':      'linear-gradient(135deg, #1a1508, var(--bg2))',
+    };
+    if (gradients[gName]) {
+      header.style.background = gradients[gName];
+    }
+
+    header.innerHTML = `
+      <div class="group-icon" style="background:${icon[0]}22;color:${icon[0]}">${icon[1]}</div>
+      <span class="group-arrow${isOpen ? ' open' : ''}">&#9654;</span>
+      <div class="group-info">
+        <h2>${escHtml(nameZh)}</h2>
+        <div class="group-name-en">${escHtml(nameEn)}</div>
+      </div>
+      <div class="group-stats">
+        <span><b>${gPassages.length}</b> 段落</span>
+      </div>
+    `;
+
+    const body = document.createElement('div');
+    body.className = 'group-body' + (isOpen ? ' open' : '');
+
+    header.addEventListener('click', () => {
+      const nowOpen = body.classList.toggle('open');
+      header.querySelector('.group-arrow').classList.toggle('open', nowOpen);
+      if (nowOpen) {
+        openSections.add('g:' + gName);
+        if (!body.dataset.rendered) {
+          renderChunked(body, gPassages, 0);
+          body.dataset.rendered = '1';
+        }
+      } else {
+        openSections.delete('g:' + gName);
+      }
+    });
+
+    if (isOpen && !body.dataset.rendered) {
+      renderChunked(body, gPassages, 0);
+      body.dataset.rendered = '1';
+    }
+
+    content.appendChild(header);
+    content.appendChild(body);
+  });
+}
+
+function groupPassages(passages) {
+  const groups = new Map();
+  passages.forEach(p => {
+    const g = p.group || '(uncategorized)';
+    if (!groups.has(g)) groups.set(g, []);
+    groups.get(g).push(p);
+  });
+  if (DATA.groups && DATA.groups.length > 0) {
+    const ordered = [];
+    const seen = new Set();
+    DATA.groups.forEach(gi => {
+      const key = gi.id || gi.name;
+      if (groups.has(key)) { ordered.push([key, groups.get(key)]); seen.add(key); }
+    });
+    groups.forEach((v, k) => { if (!seen.has(k)) ordered.push([k, v]); });
+    return ordered;
+  }
+  return Array.from(groups.entries()).sort((a, b) => b[1].length - a[1].length);
+}
+
+// Scene view: group by location with sub-grouping by passage name prefix
+function renderSceneView(passages) {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+
+  if (passages.length === 0) {
+    content.innerHTML = '<div class="empty-state">未找到匹配的段落</div>';
+    return;
+  }
+
+  // Floor-based ordering for scene view
+  const floorOrder = ['prologue','gate','ground','floor1','floor2','floor3','basement',
+    'garden','village','sabrina','temple','cemetery','forest','caves','supernatural',
+    'club','special','death','endings','misc','system'];
+
+  const groups = groupPassages(passages);
+  groups.sort((a, b) => {
+    const ai = floorOrder.indexOf(a[0]);
+    const bi = floorOrder.indexOf(b[0]);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+
+  groups.forEach(([gName, gPassages]) => {
+    const icon = GROUP_ICONS[gName] || ['#475569', gName.substring(0,2).toUpperCase()];
+    const gInfo = (DATA.groups || []).find(g => g.id === gName);
+    const nameZh = (gInfo && gInfo.name_zh) || GROUP_NAMES_ZH[gName] || gName;
+    const nameEn = (gInfo && gInfo.name) || gName;
+    const isOpen = openSections.has('sv:' + gName);
 
     const header = document.createElement('div');
     header.className = 'group-header';
     header.innerHTML = `
-      <span class="group-arrow${isOpen ? ' open' : ''}">▶</span>
+      <div class="group-icon" style="background:${icon[0]}22;color:${icon[0]}">${icon[1]}</div>
+      <span class="group-arrow${isOpen ? ' open' : ''}">&#9654;</span>
       <div class="group-info">
-        <h2>${escHtml(displayName)}</h2>
-        ${displayNameEn ? `<div class="group-name-en">${escHtml(displayNameEn)}</div>` : ''}
+        <h2>${escHtml(nameZh)}</h2>
+        <div class="group-name-en">${escHtml(nameEn)}</div>
       </div>
       <div class="group-stats"><b>${gPassages.length}</b> 段落</div>
     `;
@@ -609,19 +817,18 @@ function renderGroupView(passages) {
       const nowOpen = body.classList.toggle('open');
       header.querySelector('.group-arrow').classList.toggle('open', nowOpen);
       if (nowOpen) {
-        openGroups.add(gName);
+        openSections.add('sv:' + gName);
         if (!body.dataset.rendered) {
-          renderPassageChunked(body, gPassages, 0);
+          renderChunked(body, gPassages, 0);
           body.dataset.rendered = '1';
         }
       } else {
-        openGroups.delete(gName);
+        openSections.delete('sv:' + gName);
       }
     });
 
-    // Auto-render if was open
     if (isOpen && !body.dataset.rendered) {
-      renderPassageChunked(body, gPassages, 0);
+      renderChunked(body, gPassages, 0);
       body.dataset.rendered = '1';
     }
 
@@ -630,33 +837,6 @@ function renderGroupView(passages) {
   });
 }
 
-// === Grouping (respects DATA.groups order from JSON) ===
-function groupPassages(passages) {
-  const groups = new Map();
-  passages.forEach(p => {
-    const g = p.group || '（未分類）';
-    if (!groups.has(g)) groups.set(g, []);
-    groups.get(g).push(p);
-  });
-  // Use DATA.groups order if available, otherwise fallback to count-based sort
-  if (DATA.groups && DATA.groups.length > 0) {
-    const ordered = [];
-    const seen = new Set();
-    DATA.groups.forEach(gi => {
-      const key = gi.id || gi.name;
-      if (groups.has(key)) {
-        ordered.push([key, groups.get(key)]);
-        seen.add(key);
-      }
-    });
-    // Append any groups not in DATA.groups
-    groups.forEach((v, k) => { if (!seen.has(k)) ordered.push([k, v]); });
-    return ordered;
-  }
-  return Array.from(groups.entries()).sort((a, b) => b[1].length - a[1].length);
-}
-
-// === All View ===
 function renderAllView(passages) {
   const content = document.getElementById('content');
   content.innerHTML = '';
@@ -664,94 +844,64 @@ function renderAllView(passages) {
     content.innerHTML = '<div class="empty-state">未找到匹配的段落</div>';
     return;
   }
-  renderPassageChunked(content, passages, 0);
+  renderChunked(content, passages, 0);
 }
 
-// === Chunked Rendering ===
-function renderPassageChunked(container, passages, startIdx) {
-  const CHUNK = 80;
-  const end = Math.min(startIdx + CHUNK, passages.length);
-  let html = '';
-  for (let i = startIdx; i < end; i++) {
-    html += passageHtml(passages[i], i);
-  }
-  container.insertAdjacentHTML('beforeend', html);
-
-  if (end < passages.length) {
-    const sentinel = document.createElement('div');
-    sentinel.className = 'loading';
-    sentinel.style.padding = '20px';
-    sentinel.innerHTML = `<div style="font-size:12px;color:var(--text3)">載入更多 (${end}/${passages.length})...</div>`;
-    container.appendChild(sentinel);
-
-    const obs = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        obs.disconnect();
-        sentinel.remove();
-        renderPassageChunked(container, passages, end);
-      }
-    });
-    obs.observe(sentinel);
-  }
-}
-
-// === Render ===
 function resetAndRender() {
+  document.querySelectorAll('[data-rendered]').forEach(el => {
+    if (!el.classList.contains('open')) el.dataset.rendered = '';
+  });
   const passages = getFiltered();
-  if (currentView === 'group') {
-    renderGroupView(passages);
-  } else {
-    renderAllView(passages);
+  switch (currentView) {
+    case 'narrative': renderNarrativeView(passages); break;
+    case 'scene': renderSceneView(passages); break;
+    case 'all': renderAllView(passages); break;
   }
 }
 
 function setActiveView(view) {
   currentView = view;
+  openSections.clear();
   document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(view === 'group' ? 'viewGroup' : 'viewAll').classList.add('active');
+  const btnId = view === 'narrative' ? 'viewNarrative' : view === 'scene' ? 'viewScene' : 'viewAll';
+  document.getElementById(btnId).classList.add('active');
   resetAndRender();
 }
 
-// === Init ===
 function init() {
   renderBanner();
 
   let searchTimeout;
-  document.getElementById('searchBox').addEventListener('input', (e) => {
+  document.getElementById('searchBox').addEventListener('input', e => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
       searchQuery = e.target.value.trim();
+      openSections.clear();
       resetAndRender();
     }, 300);
   });
 
-  document.getElementById('showZh').addEventListener('change', (e) => {
-    showZh = e.target.checked;
-    clearRenderedCache();
-    resetAndRender();
-  });
-  document.getElementById('showEn').addEventListener('change', (e) => {
-    showEn = e.target.checked;
-    clearRenderedCache();
-    resetAndRender();
-  });
-  document.getElementById('showName').addEventListener('change', (e) => {
-    showName = e.target.checked;
-    clearRenderedCache();
-    resetAndRender();
-  });
+  document.getElementById('showZh').addEventListener('change', e => { showZh = e.target.checked; openSections.clear(); resetAndRender(); });
+  document.getElementById('showEn').addEventListener('change', e => { showEn = e.target.checked; openSections.clear(); resetAndRender(); });
+  document.getElementById('showChoices').addEventListener('change', e => { showChoices = e.target.checked; openSections.clear(); resetAndRender(); });
+  document.getElementById('showCond').addEventListener('change', e => { showCond = e.target.checked; openSections.clear(); resetAndRender(); });
 
-  document.getElementById('viewGroup').addEventListener('click', () => setActiveView('group'));
+  document.getElementById('viewNarrative').addEventListener('click', () => setActiveView('narrative'));
+  document.getElementById('viewScene').addEventListener('click', () => setActiveView('scene'));
   document.getElementById('viewAll').addEventListener('click', () => setActiveView('all'));
 
-  resetAndRender();
-}
-
-function clearRenderedCache() {
-  openGroups.clear();
-  document.querySelectorAll('.group-body').forEach(div => {
-    div.dataset.rendered = '';
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') return;
+    if (e.key === '/') { e.preventDefault(); document.getElementById('searchBox').focus(); }
+    if (e.key === '1') setActiveView('narrative');
+    if (e.key === '2') setActiveView('scene');
+    if (e.key === '3') setActiveView('all');
+    if (e.key === 'Escape') {
+      document.getElementById('searchBox').blur();
+    }
   });
+
+  resetAndRender();
 }
 
 loadData();
